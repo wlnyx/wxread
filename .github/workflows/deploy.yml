@@ -36,7 +36,18 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install certifi==2024.8.30 charset-normalizer==3.4.0 idna==3.10 requests==2.32.3 urllib3==2.2.3
-
+    
+    - name: Generate random number and calculate READ_NUM
+      env:
+        READ_NUM: ${{ vars.READ_NUM }}
+      run: |
+        # 生成一个0到50之间的随机数
+        RANDOM_NUMBER=$(shuf -n 1 -i 0-50)
+        # 计算结果
+        RESULT=$((READ_NUM + RANDOM_NUMBER))
+        # 设置环境变量
+        echo "READ_NUM_WITH_RANDOM=$RESULT" >> $GITHUB_ENV
+    
     - name: Run deployment script
       env:
         WXREAD_CURL_BASH: ${{ secrets.WXREAD_CURL_BASH }}
@@ -45,7 +56,7 @@ jobs:
         WXPUSHER_SPT: ${{ secrets.WXPUSHER_SPT }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        READ_NUM: ${{ vars.READ_NUM }}  # 使用 Repository Variables
+        READ_NUM: ${{ env.READ_NUM_WITH_RANDOM }}  # 使用 Repository Variables
 
       run: |
         python main.py
